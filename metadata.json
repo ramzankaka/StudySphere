@@ -1,0 +1,6 @@
+{
+  "name": "StudySphere Android",
+  "description": "Cross-platform study manager for courses, lecture materials, assignment deadlines, and organized study notes across mobile and desktop.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
