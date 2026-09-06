@@ -378,7 +378,25 @@ class StudyDatabase {
       } else {
         all.unshift(item);
       }
-      localStorage.setItem(fallbackKey, JSON.stringify(all));
+      try {
+        localStorage.setItem(fallbackKey, JSON.stringify(all));
+      } catch (err) {
+        console.warn(`LocalStorage quota reached for ${fallbackKey}, attempting to save metadata:`, err);
+        // If quota exceeded (e.g. large fileData), try saving with trimmed fileData
+        const anyItem = item as Record<string, any>;
+        if (anyItem.fileData) {
+          const trimmedItem = { ...anyItem, fileData: undefined } as unknown as T;
+          if (index >= 0) all[index] = trimmedItem;
+          else all[0] = trimmedItem;
+          try {
+            localStorage.setItem(fallbackKey, JSON.stringify(all));
+          } catch {
+            throw new Error('Storage is full. Please remove unused files or use a browser with IndexedDB support.');
+          }
+        } else {
+          throw new Error('Local storage capacity exceeded.');
+        }
+      }
       return;
     }
 
@@ -388,8 +406,12 @@ class StudyDatabase {
         const store = tx.objectStore(storeName);
         const req = store.put(item);
         req.onsuccess = () => resolve();
-        req.onerror = () => reject(req.error);
+        req.onerror = () => {
+          console.error(`IndexedDB put error on ${storeName}:`, req.error);
+          reject(req.error || new Error(`Failed to write to ${storeName}`));
+        };
       } catch (err) {
+        console.error(`IndexedDB transaction error on ${storeName}:`, err);
         reject(err);
       }
     });

@@ -12,11 +12,13 @@ import {
   FileText, 
   CheckCircle2, 
   Clock, 
-  Plus 
+  Plus,
+  Smartphone
 } from 'lucide-react';
 import { Subject, Material, Deadline, StudyNote } from '../../types';
 import { COLOR_MAP, getSubjectIcon, formatFileSize, formatRelativeDueDate, getPriorityBadge } from '../../utils/helpers';
 import { ConfirmModal } from './ConfirmModal';
+import { openWithDeviceApp } from '../../utils/fileViewer';
 
 interface SubjectDetailModalProps {
   subject: Subject | null;
@@ -200,9 +202,22 @@ export const SubjectDetailModal: React.FC<SubjectDetailModalProps> = ({
                           </p>
                         </div>
                       </div>
-                      <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-slate-200/80 text-slate-700">
-                        Preview
-                      </span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openWithDeviceApp(mat);
+                          }}
+                          className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
+                          title="Open in WPS Office, CamScanner, Drive, etc."
+                        >
+                          <Smartphone size={13} />
+                        </button>
+                        <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-slate-200/80 text-slate-700">
+                          Options
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>

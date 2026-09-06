@@ -10,9 +10,12 @@ import {
   Sun,
   Moon,
   AlertTriangle,
-  CheckSquare
+  CheckSquare,
+  Download,
+  Smartphone
 } from 'lucide-react';
 import { AppTab, Subject } from '../types';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 
 interface TopAppBarProps {
   currentTab: AppTab;
@@ -26,6 +29,7 @@ interface TopAppBarProps {
   onOpenDeleteAll: () => void;
   onOpenDeleteSelected: () => void;
   onOpenRestoreSelected: () => void;
+  onOpenInstallModal: () => void;
   subjects?: Subject[];
 }
 
@@ -38,8 +42,18 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
   onOpenDeleteAll,
   onOpenDeleteSelected,
   onOpenRestoreSelected,
+  onOpenInstallModal,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
+  const { isInstalled, isInstallable, install } = usePWAInstall();
+
+  const handleQuickInstall = async () => {
+    if (isInstallable) {
+      const res = await install();
+      if (res === 'accepted') return;
+    }
+    onOpenInstallModal();
+  };
 
   return (
     <header className="w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-xs transition-colors">
@@ -82,8 +96,21 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           )}
         </div>
 
-        {/* Quick Utilities: Theme Toggle, Pomodoro Timer & Options Menu */}
+        {/* Quick Utilities: Install App, Theme Toggle, Pomodoro Timer & Options Menu */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Prominent Install App Button (Suppressed if running standalone) */}
+          {!isInstalled && (
+            <button
+              id="header-install-app-btn"
+              onClick={handleQuickInstall}
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold shadow-xs transition"
+              title="Install StudySphere on Mobile or PC"
+            >
+              <Download size={14} />
+              <span className="hidden sm:inline">Install App</span>
+            </button>
+          )}
+
           {/* Quick Theme Toggle Button (Light/White vs Dark) */}
           <button
             id="header-theme-toggle-btn"
@@ -127,7 +154,25 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
                   className="fixed inset-0 z-40"
                   onClick={() => setShowMenu(false)}
                 />
-                <div className="absolute right-0 top-11 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50 text-xs font-medium text-slate-700 dark:text-slate-200 animate-fadeIn">
+                <div className="absolute right-0 top-11 w-60 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-2 z-50 text-xs font-medium text-slate-700 dark:text-slate-200 animate-fadeIn">
+                  {/* Install App in Dropdown */}
+                  {!isInstalled && (
+                    <>
+                      <button
+                        id="menu-install-app-btn"
+                        onClick={() => {
+                          setShowMenu(false);
+                          handleQuickInstall();
+                        }}
+                        className="w-full px-3 py-2 flex items-center gap-2.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition text-left font-bold"
+                      >
+                        <Smartphone size={15} />
+                        <span>Install StudySphere App</span>
+                      </button>
+                      <div className="h-px bg-slate-100 dark:bg-slate-800 my-1.5" />
+                    </>
+                  )}
+
                   {/* Theme Mode Option */}
                   <div className="px-3 py-1 text-[10px] uppercase tracking-wider font-bold text-slate-400 dark:text-slate-500">
                     Preferences & Theme

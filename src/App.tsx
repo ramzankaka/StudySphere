@@ -27,11 +27,15 @@ import { EditMaterialModal } from './components/modals/EditMaterialModal';
 import { AddDeadlineModal } from './components/modals/AddDeadlineModal';
 import { NoteEditorModal } from './components/modals/NoteEditorModal';
 import { DocumentViewerModal } from './components/modals/DocumentViewerModal';
+import { OpenMaterialOptionsModal } from './components/modals/OpenMaterialOptionsModal';
 import { SubjectDetailModal } from './components/modals/SubjectDetailModal';
 import { StudyTimerModal } from './components/modals/StudyTimerModal';
 import { DeleteAllDataModal } from './components/modals/DeleteAllDataModal';
 import { DeleteSelectedDataModal } from './components/modals/DeleteSelectedDataModal';
 import { RestoreSelectedDataModal } from './components/modals/RestoreSelectedDataModal';
+import { InstallAppModal } from './components/modals/InstallAppModal';
+import { PWAInstallBanner } from './components/PWAInstallBanner';
+import { OfflineIndicator } from './components/OfflineIndicator';
 
 export default function App() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -71,6 +75,7 @@ export default function App() {
   const [isDeleteAllOpen, setIsDeleteAllOpen] = useState(false);
   const [isDeleteSelectedOpen, setIsDeleteSelectedOpen] = useState(false);
   const [isRestoreSelectedOpen, setIsRestoreSelectedOpen] = useState(false);
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
 
   const [isAddSubjectOpen, setIsAddSubjectOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
@@ -89,6 +94,7 @@ export default function App() {
   const [noteDefaultSubjectId, setNoteDefaultSubjectId] = useState<string | undefined>();
 
   const [selectedMaterialForPreview, setSelectedMaterialForPreview] = useState<Material | null>(null);
+  const [materialForOptions, setMaterialForOptions] = useState<Material | null>(null);
   const [selectedSubjectDetail, setSelectedSubjectDetail] = useState<Subject | null>(null);
 
   // Load initial data from IndexedDB
@@ -261,11 +267,12 @@ export default function App() {
         onOpenDeleteAll={() => setIsDeleteAllOpen(true)}
         onOpenDeleteSelected={() => setIsDeleteSelectedOpen(true)}
         onOpenRestoreSelected={() => setIsRestoreSelectedOpen(true)}
+        onOpenInstallModal={() => setIsInstallModalOpen(true)}
         subjects={subjects}
       />
 
       {/* Main Responsive Tab Viewport */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 pb-28 overflow-y-auto no-scrollbar relative">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 pb-[calc(7rem+env(safe-area-inset-bottom))] overflow-y-auto no-scrollbar relative">
         {currentTab === 'home' && (
           <HomeTab
             subjects={subjects}
@@ -274,7 +281,7 @@ export default function App() {
             notes={notes}
             onNavigateTab={setCurrentTab}
             onSelectSubject={(s) => setSelectedSubjectDetail(s)}
-            onSelectMaterial={(m) => setSelectedMaterialForPreview(m)}
+            onSelectMaterial={(m) => setMaterialForOptions(m)}
             onSelectNote={(n) => {
               setEditingNote(n);
               setIsNoteEditorOpen(true);
@@ -322,7 +329,7 @@ export default function App() {
             materials={materials}
             subjects={subjects}
             searchQuery={searchQuery}
-            onSelectMaterial={(m) => setSelectedMaterialForPreview(m)}
+            onSelectMaterial={(m) => setMaterialForOptions(m)}
             onUploadClick={() => {
               setUploadDefaultSubjectId(undefined);
               setIsUploadOpen(true);
@@ -430,6 +437,7 @@ export default function App() {
         onSave={handleSaveMaterial}
         subjects={subjects}
         defaultSubjectId={uploadDefaultSubjectId}
+        onOpenAddSubject={() => setIsAddSubjectOpen(true)}
       />
 
       {/* 3. Add / Edit Deadline Modal */}
@@ -460,7 +468,18 @@ export default function App() {
         defaultSubjectId={noteDefaultSubjectId}
       />
 
-      {/* 5. Document Viewer Modal */}
+      {/* 5a. Open Material Options Modal (Device App, Browser, In-App, Download) */}
+      <OpenMaterialOptionsModal
+        isOpen={Boolean(materialForOptions)}
+        material={materialForOptions}
+        subject={subjects.find((s) => s.id === materialForOptions?.subjectId)}
+        onClose={() => setMaterialForOptions(null)}
+        onOpenInAppReader={(m) => {
+          setSelectedMaterialForPreview(m);
+        }}
+      />
+
+      {/* 5b. Document In-App Reader Modal */}
       <DocumentViewerModal
         isOpen={Boolean(selectedMaterialForPreview)}
         material={selectedMaterialForPreview}
@@ -473,7 +492,7 @@ export default function App() {
         onDelete={handleDeleteMaterial}
       />
 
-      {/* 5b. Edit Material Modal */}
+      {/* 5c. Edit Material Modal */}
       <EditMaterialModal
         isOpen={isEditMaterialOpen}
         material={editingMaterial}
@@ -498,7 +517,7 @@ export default function App() {
           setIsAddSubjectOpen(true);
         }}
         onDelete={handleDeleteSubject}
-        onSelectMaterial={(m) => setSelectedMaterialForPreview(m)}
+        onSelectMaterial={(m) => setMaterialForOptions(m)}
         onSelectNote={(n) => {
           setEditingNote(n);
           setIsNoteEditorOpen(true);
@@ -563,6 +582,20 @@ export default function App() {
         onClose={() => setIsRestoreSelectedOpen(false)}
         onRestoreSelected={handleRestoreSelectedData}
       />
+
+      {/* 11. PWA In-App Install Modal */}
+      <InstallAppModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
+      />
+
+      {/* PWA Mobile Floating Install Banner */}
+      <PWAInstallBanner
+        onOpenInstallModal={() => setIsInstallModalOpen(true)}
+      />
+
+      {/* PWA Offline Connection Indicator */}
+      <OfflineIndicator />
     </div>
   );
 }

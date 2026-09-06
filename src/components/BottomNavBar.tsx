@@ -30,7 +30,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   return (
     <nav 
       aria-label="Application Navigation" 
-      className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 shadow-lg px-2 sm:px-6 py-1 select-none transition-colors"
+      className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 shadow-lg px-2 sm:px-6 pt-1 pb-[calc(0.25rem+env(safe-area-inset-bottom))] select-none transition-colors"
     >
       <div className="max-w-xl mx-auto flex items-center justify-around gap-1 sm:gap-2">
         {tabs.map((tab) => {
@@ -42,7 +42,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
               key={tab.id}
               id={`nav-tab-${tab.id}`}
               onClick={() => onTabChange(tab.id)}
-              className={`flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-1.5 sm:py-2 px-2 sm:px-3.5 rounded-xl transition-all outline-none group relative ${
+              className={`flex-1 min-h-[44px] flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-1.5 sm:py-2 px-2 sm:px-3.5 rounded-xl transition-all outline-none group relative ${
                 isActive
                   ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold shadow-2xs'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 hover:bg-slate-100/70 dark:hover:bg-slate-800/70'

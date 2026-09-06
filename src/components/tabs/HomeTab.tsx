@@ -11,10 +11,12 @@ import {
   Timer, 
   AlertCircle,
   Plus,
-  Sparkles
+  Sparkles,
+  Smartphone
 } from 'lucide-react';
 import { Subject, Material, Deadline, StudyNote, AppTab } from '../../types';
 import { COLOR_MAP, getSubjectIcon, formatRelativeDueDate, getPriorityBadge } from '../../utils/helpers';
+import { openWithDeviceApp } from '../../utils/fileViewer';
 
 interface HomeTabProps {
   subjects: Subject[];
@@ -284,7 +286,19 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                           </span>
                         </td>
                         <td className="py-2.5 text-right text-slate-500 dark:text-slate-400 text-[11px] font-mono">
-                          {new Date(mat.uploadDate).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                          <div className="flex items-center justify-end gap-1">
+                            <span>{new Date(mat.uploadDate).toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openWithDeviceApp(mat);
+                              }}
+                              className="p-1 rounded-md text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/60 transition"
+                              title="Open in WPS Office, CamScanner, Drive, etc."
+                            >
+                              <Smartphone size={12} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );

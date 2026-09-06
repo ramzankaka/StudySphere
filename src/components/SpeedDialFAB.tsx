@@ -60,7 +60,7 @@ export const SpeedDialFAB: React.FC<SpeedDialFABProps> = ({
   ];
 
   return (
-    <div className="fixed bottom-20 right-5 sm:right-8 z-30 flex flex-col items-end pointer-events-auto">
+    <div className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] right-4 sm:right-8 z-30 flex flex-col items-end pointer-events-auto">
       {/* Backdrop when open */}
       {isOpen && (
         <div
