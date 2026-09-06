@@ -184,7 +184,7 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({ isOpen, onClos
                     3
                   </div>
                   <div className="flex-1">
-                    <span>Confirm installation. StudySphere will launch in full screen with full offline access!</span>
+                    <span>Confirm installation. Once added, <strong>open StudySphere directly from your phone's Home Screen or App Drawer</strong>. It will run in its own standalone window without Chrome bars, working 100% offline!</span>
                   </div>
                 </div>
               </div>
