@@ -13,12 +13,12 @@ import {
   CheckCircle2, 
   Clock, 
   Plus,
-  Smartphone
+  Download
 } from 'lucide-react';
 import { Subject, Material, Deadline, StudyNote } from '../../types';
 import { COLOR_MAP, getSubjectIcon, formatFileSize, formatRelativeDueDate, getPriorityBadge } from '../../utils/helpers';
 import { ConfirmModal } from './ConfirmModal';
-import { openWithDeviceApp } from '../../utils/fileViewer';
+import { downloadMaterialFile } from '../../utils/fileViewer';
 
 interface SubjectDetailModalProps {
   subject: Subject | null;
@@ -207,12 +207,12 @@ export const SubjectDetailModal: React.FC<SubjectDetailModalProps> = ({
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            openWithDeviceApp(mat);
+                            downloadMaterialFile(mat);
                           }}
-                          className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
-                          title="Open in WPS Office, CamScanner, Drive, etc."
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-200/60 transition"
+                          title="Download File to Device"
                         >
-                          <Smartphone size={13} />
+                          <Download size={13} />
                         </button>
                         <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-slate-200/80 text-slate-700">
                           Options

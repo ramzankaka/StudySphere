@@ -12,11 +12,11 @@ import {
   AlertCircle,
   Plus,
   Sparkles,
-  Smartphone
+  Download
 } from 'lucide-react';
 import { Subject, Material, Deadline, StudyNote, AppTab } from '../../types';
 import { COLOR_MAP, getSubjectIcon, formatRelativeDueDate, getPriorityBadge } from '../../utils/helpers';
-import { openWithDeviceApp } from '../../utils/fileViewer';
+import { downloadMaterialFile } from '../../utils/fileViewer';
 
 interface HomeTabProps {
   subjects: Subject[];
@@ -291,12 +291,12 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                openWithDeviceApp(mat);
+                                downloadMaterialFile(mat);
                               }}
-                              className="p-1 rounded-md text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/60 transition"
-                              title="Open in WPS Office, CamScanner, Drive, etc."
+                              className="p-1 rounded-md text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                              title="Download File to Device"
                             >
-                              <Smartphone size={12} />
+                              <Download size={12} />
                             </button>
                           </div>
                         </td>

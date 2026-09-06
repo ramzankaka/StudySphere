@@ -35,7 +35,6 @@ import { DeleteSelectedDataModal } from './components/modals/DeleteSelectedDataM
 import { RestoreSelectedDataModal } from './components/modals/RestoreSelectedDataModal';
 import { InstallAppModal } from './components/modals/InstallAppModal';
 import { PWAInstallBanner } from './components/PWAInstallBanner';
-import { OfflineIndicator } from './components/OfflineIndicator';
 
 export default function App() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -593,9 +592,6 @@ export default function App() {
       <PWAInstallBanner
         onOpenInstallModal={() => setIsInstallModalOpen(true)}
       />
-
-      {/* PWA Offline Connection Indicator */}
-      <OfflineIndicator />
     </div>
   );
 }

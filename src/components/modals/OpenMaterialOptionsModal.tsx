@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { Material, Subject } from '../../types';
 import { formatFileSize, COLOR_MAP } from '../../utils/helpers';
-import { openWithDeviceApp, openInBrowserTab, downloadMaterialFile } from '../../utils/fileViewer';
+import { openWithDeviceApp, openInBrowserTab, downloadMaterialFile, shareMaterialFile } from '../../utils/fileViewer';
 
 interface OpenMaterialOptionsModalProps {
   material: Material | null;
@@ -39,27 +39,30 @@ export const OpenMaterialOptionsModal: React.FC<OpenMaterialOptionsModalProps> =
   const subjectColor = subject ? COLOR_MAP[subject.color] : COLOR_MAP.indigo;
 
   const handleOpenDeviceApp = async () => {
-    setActionStatus('Opening device app picker...');
+    setActionStatus('Opening document preview...');
     const result = await openWithDeviceApp(material);
     if (result.success) {
-      if (result.method === 'share_sheet') {
-        setActionStatus('Opened device app chooser!');
-      } else if (result.method === 'new_tab') {
-        setActionStatus('Opened in new window!');
-      } else {
-        setActionStatus('Downloaded file to device!');
-      }
-      setTimeout(() => {
-        setActionStatus(null);
-        onClose();
-      }, 1200);
+      setActionStatus('Document opened in preview window!');
     } else {
-      setActionStatus('Saved file to your device Downloads.');
-      setTimeout(() => {
-        setActionStatus(null);
-        onClose();
-      }, 1500);
+      setActionStatus('Pop-up blocked. Opening in reader...');
+      onOpenInAppReader(material);
     }
+    setTimeout(() => {
+      setActionStatus(null);
+      onClose();
+    }, 1200);
+  };
+
+  const handleShare = async () => {
+    setActionStatus('Opening share...');
+    const shared = await shareMaterialFile(material);
+    if (shared) {
+      setActionStatus('Shared successfully!');
+    }
+    setTimeout(() => {
+      setActionStatus(null);
+      onClose();
+    }, 1200);
   };
 
   const handleBrowserTab = () => {
@@ -147,48 +150,31 @@ export const OpenMaterialOptionsModal: React.FC<OpenMaterialOptionsModalProps> =
             Choose how to view or open this material
           </p>
 
-          {/* Option 1: Open with Device App (Highlighted) */}
+          {/* Option 1: Read Inside StudySphere App (Highlighted Default) */}
           <button
-            id="open-with-device-app-btn"
-            onClick={handleOpenDeviceApp}
+            id="open-in-app-reader-btn"
+            onClick={handleInApp}
             className="w-full text-left p-4 rounded-xl border-2 border-blue-500/50 bg-blue-50/40 dark:bg-blue-950/30 hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition flex items-start gap-3.5 group cursor-pointer shadow-xs active:scale-[0.99]"
           >
             <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
-              <Smartphone size={20} />
+              <BookOpen size={20} />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
-                  Open with Device App
+                  Read Inside StudySphere
                 </h4>
                 <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200">
                   Recommended
                 </span>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
-                Opens the file directly in your installed mobile or PC document viewer:
+                Instant full-screen reader with zoom, text search, study summaries, and custom font scaling. No downloading required!
               </p>
-              <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                <span className="text-[11px] px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-200">
-                  WPS Office
-                </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-200">
-                  CamScanner
-                </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-200">
-                  Google Drive
-                </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-200">
-                  Adobe Acrobat
-                </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-200">
-                  ShareIt
-                </span>
-              </div>
             </div>
           </button>
 
-          {/* Option 2: Open in New Browser Tab */}
+          {/* Option 2: Open in New Browser Tab / Preview */}
           <button
             id="open-in-browser-tab-btn"
             onClick={handleBrowserTab}
@@ -199,7 +185,7 @@ export const OpenMaterialOptionsModal: React.FC<OpenMaterialOptionsModalProps> =
             </div>
             <div className="flex-1 min-w-0">
               <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
-                Open in Full Browser Window
+                Open in Full Browser Tab
               </h4>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Displays the document in a full-sized tab with browser zoom, text selection, and print tools.
@@ -207,26 +193,7 @@ export const OpenMaterialOptionsModal: React.FC<OpenMaterialOptionsModalProps> =
             </div>
           </button>
 
-          {/* Option 3: Read Inside StudySphere App */}
-          <button
-            id="open-in-app-reader-btn"
-            onClick={handleInApp}
-            className="w-full text-left p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition flex items-start gap-3.5 group cursor-pointer active:scale-[0.99]"
-          >
-            <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-              <BookOpen size={20} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
-                Read Inside StudySphere
-              </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Integrated reader with study summaries, topic tags, custom font scaling, and quick notes.
-              </p>
-            </div>
-          </button>
-
-          {/* Option 4: Download to Device */}
+          {/* Option 3: Download to Device (Explicit Only) */}
           <button
             id="download-material-btn"
             onClick={handleDownload}
@@ -240,7 +207,26 @@ export const OpenMaterialOptionsModal: React.FC<OpenMaterialOptionsModalProps> =
                 Download to Device
               </h4>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Saves the file directly into your device's Downloads folder for 100% offline access anytime.
+                Saves the file directly into your device's Downloads folder for offline access outside the app.
+              </p>
+            </div>
+          </button>
+
+          {/* Option 5: Share Document (WhatsApp, Bluetooth, etc.) */}
+          <button
+            id="share-material-btn"
+            onClick={handleShare}
+            className="w-full text-left p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition flex items-start gap-3.5 group cursor-pointer active:scale-[0.99]"
+          >
+            <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <Share2 size={20} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
+                Share Document to Apps
+              </h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Send this file to WhatsApp, Telegram, Gmail, Bluetooth, or Quick Share.
               </p>
             </div>
           </button>

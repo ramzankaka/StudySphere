@@ -20,11 +20,11 @@
       ]
     },
     {
-      "source": "/manifest.webmanifest",
+      "source": "/(manifest.webmanifest|manifest.json)",
       "headers": [
         {
           "key": "Content-Type",
-          "value": "application/manifest+json"
+          "value": "application/manifest+json; charset=utf-8"
         },
         {
           "key": "Cache-Control",

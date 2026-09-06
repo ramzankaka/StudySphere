@@ -9,13 +9,12 @@ import {
   Code, 
   Image as ImageIcon, 
   FileCheck,
-  Edit3,
-  Smartphone
+  Edit3
 } from 'lucide-react';
 import { Material, Subject, MaterialCategory } from '../../types';
 import { formatFileSize, COLOR_MAP } from '../../utils/helpers';
 import { ConfirmModal } from '../modals/ConfirmModal';
-import { openWithDeviceApp } from '../../utils/fileViewer';
+import { downloadMaterialFile } from '../../utils/fileViewer';
 
 interface MaterialsTabProps {
   materials: Material[];
@@ -220,12 +219,12 @@ export const MaterialsTab: React.FC<MaterialsTabProps> = ({
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        openWithDeviceApp(mat);
+                        downloadMaterialFile(mat);
                       }}
-                      className="p-1.5 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 rounded-lg transition"
-                      title="Open in WPS Office, CamScanner, Drive, etc."
+                      className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/40 transition"
+                      title="Download File to Device"
                     >
-                      <Smartphone size={13} />
+                      <Download size={13} />
                     </button>
                     <button
                       onClick={(e) => {

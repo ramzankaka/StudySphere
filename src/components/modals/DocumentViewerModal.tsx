@@ -15,13 +15,12 @@ import {
   Code,
   Image as ImageIcon,
   ExternalLink,
-  Smartphone,
   Share2,
   AlertCircle
 } from 'lucide-react';
 import { Material, Subject } from '../../types';
 import { formatFileSize, COLOR_MAP } from '../../utils/helpers';
-import { materialToFile, openWithDeviceApp, openInBrowserTab, downloadMaterialFile } from '../../utils/fileViewer';
+import { materialToFile, openInBrowserTab, downloadMaterialFile, shareMaterialFile } from '../../utils/fileViewer';
 
 interface DocumentViewerModalProps {
   material: Material | null;
@@ -64,23 +63,22 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
 
   if (!isOpen || !material) return null;
 
-  const handleOpenDevice = async () => {
-    setOpenStatus('Opening device app picker...');
-    const res = await openWithDeviceApp(material);
-    if (res.success) {
-      setOpenStatus(res.method === 'share_sheet' ? 'Opened in app!' : 'Opened document!');
-    } else {
-      setOpenStatus('Downloaded to device');
-    }
-    setTimeout(() => setOpenStatus(null), 1500);
-  };
-
   const handleBrowserTab = () => {
     openInBrowserTab(material);
   };
 
+  const handleShare = async () => {
+    const shared = await shareMaterialFile(material);
+    if (shared) {
+      setOpenStatus('Document shared successfully!');
+      setTimeout(() => setOpenStatus(null), 1500);
+    }
+  };
+
   const handleDownload = () => {
     downloadMaterialFile(material);
+    setOpenStatus('Downloading document to device...');
+    setTimeout(() => setOpenStatus(null), 2000);
   };
 
   const handleCopyText = () => {
@@ -151,14 +149,23 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
 
           {/* Action Tools */}
           <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-            {/* Direct Open in Device App Button */}
+            {/* Download Button (Only way to download to device) */}
             <button
-              onClick={handleOpenDevice}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition active:scale-95"
-              title="Open with WPS Office, CamScanner, Drive, Acrobat, etc."
+              onClick={handleDownload}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition active:scale-95"
+              title="Download File to Device"
             >
-              <Smartphone size={14} />
-              <span className="hidden sm:inline">Open in Device App</span>
+              <Download size={14} />
+              <span className="hidden sm:inline">Download</span>
+            </button>
+
+            {/* Share to Device Apps */}
+            <button
+              onClick={handleShare}
+              className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
+              title="Share Document"
+            >
+              <Share2 size={16} />
             </button>
 
             {/* Open in Browser Tab */}
@@ -192,15 +199,6 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                 <Edit3 size={16} />
               </button>
             )}
-
-            {/* Download Button */}
-            <button
-              onClick={handleDownload}
-              className="p-2 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-lg transition"
-              title="Download to Device"
-            >
-              <Download size={16} />
-            </button>
 
             {/* Fullscreen Toggle */}
             <button
@@ -239,28 +237,6 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
           </div>
         )}
 
-        {/* Quick Mobile Bar for Device Apps */}
-        <div className="px-4 py-2 bg-blue-50/80 dark:bg-blue-950/50 border-b border-blue-100 dark:border-blue-900/40 flex items-center justify-between text-xs text-blue-900 dark:text-blue-200 flex-wrap gap-2 shrink-0">
-          <div className="flex items-center gap-1.5 font-medium">
-            <Smartphone size={14} className="text-blue-600 dark:text-blue-400" />
-            <span>Open in <strong>WPS Office</strong>, <strong>CamScanner</strong>, <strong>Google Drive</strong>, or <strong>Acrobat</strong>:</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleOpenDevice}
-              className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-[11px] shadow-xs transition"
-            >
-              Launch Device App
-            </button>
-            <button
-              onClick={handleBrowserTab}
-              className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 text-slate-700 dark:text-slate-200 font-semibold rounded-lg text-[11px] transition"
-            >
-              Open in Tab
-            </button>
-          </div>
-        </div>
-
         {/* Main Document Content Canvas */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100/60 dark:bg-slate-950/60 relative">
           {/* 1. PDF Documents */}
@@ -272,7 +248,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                   <iframe
                     src={blobUrl}
                     title={material.title}
-                    className="w-full h-[520px] border-0"
+                    className="w-full h-[540px] border-0"
                   />
                 </div>
               ) : null}
@@ -298,24 +274,24 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                   </div>
                 )}
 
-                <div className="pt-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800">
+                <div className="pt-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 flex-wrap gap-2">
                   <span>
                     Uploaded: {new Date(material.uploadDate).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' })}
                   </span>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={handleOpenDevice}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition"
+                      onClick={handleBrowserTab}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-semibold transition text-xs"
                     >
-                      <Smartphone size={13} />
-                      <span>Open in Device App</span>
+                      <ExternalLink size={13} />
+                      <span>Open in Tab</span>
                     </button>
                     <button
                       onClick={handleDownload}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg font-semibold transition"
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition text-xs shadow-xs"
                     >
                       <Download size={13} />
-                      <span>Download</span>
+                      <span>Download File</span>
                     </button>
                   </div>
                 </div>
@@ -331,15 +307,15 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
               />
               <div className="flex items-center gap-2">
                 <button
-                  onClick={handleOpenDevice}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition"
+                  onClick={handleBrowserTab}
+                  className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition"
                 >
-                  <Smartphone size={14} />
-                  <span>Open in Gallery / CamScanner</span>
+                  <ExternalLink size={14} />
+                  <span>Full Preview</span>
                 </button>
                 <button
                   onClick={handleDownload}
-                  className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition"
                 >
                   <Download size={14} />
                   <span>Download Image</span>
@@ -375,29 +351,25 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                 )}
               </div>
 
-              <div className="p-4 bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50 rounded-xl text-left space-y-2">
-                <div className="flex items-center gap-2 text-xs font-bold text-blue-900 dark:text-blue-200">
-                  <Smartphone size={15} />
-                  <span>Open with Device Document Viewer</span>
-                </div>
-                <p className="text-xs text-blue-800 dark:text-blue-300 leading-relaxed">
-                  Tap below to launch this file in <strong>WPS Office</strong>, <strong>Microsoft Office</strong>, <strong>Google Drive</strong>, or your PC viewer.
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 rounded-xl text-left space-y-1.5">
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                  This document type is formatted for external office viewers. You can open it in a preview tab or save it to your device.
                 </p>
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
                 <button
-                  onClick={handleOpenDevice}
-                  className="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition"
+                  onClick={handleBrowserTab}
+                  className="w-full sm:w-auto px-4 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition"
                 >
-                  <Smartphone size={16} />
-                  <span>Open in WPS Office / Drive</span>
+                  <ExternalLink size={15} />
+                  <span>Open Preview Tab</span>
                 </button>
                 <button
                   onClick={handleDownload}
-                  className="w-full sm:w-auto px-4 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition"
+                  className="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition"
                 >
-                  <Download size={16} />
+                  <Download size={15} />
                   <span>Download File</span>
                 </button>
               </div>

@@ -62,71 +62,69 @@ Tags: ${(material.tags || []).join(', ')}`;
 }
 
 /**
- * Opens material in external device applications (WPS Office, CamScanner, Drive, Acrobat, ShareIt, etc.)
- * Uses Web Share API with Files when available (Android/iOS), or launches in a new tab / triggers download (PC).
+ * Opens material in external device applications or browser window.
+ * NEVER automatically downloads the file — downloading is reserved exclusively
+ * for explicit download button clicks.
  */
 export async function openWithDeviceApp(material: Material): Promise<{
   success: boolean;
-  method: 'share_sheet' | 'new_tab' | 'download' | 'cancelled';
+  method: 'new_tab' | 'blocked';
   message?: string;
 }> {
   try {
-    const { file, url } = materialToFile(material);
+    const { url } = materialToFile(material);
 
-    // 1. On Mobile devices (Android / iOS): Web Share API with File
-    // This triggers Android / iOS native "Complete action using" / "Open with" / "Share to"
-    // which displays installed apps like WPS Office, CamScanner, Drive, Acrobat, ShareIt, etc.
-    if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({
-          title: material.title,
-          text: `Open ${material.title} (${material.category})`,
-          files: [file],
-        });
-        return { success: true, method: 'share_sheet' };
-      } catch (shareErr: unknown) {
-        if (shareErr instanceof Error && shareErr.name === 'AbortError') {
-          // User dismissed the system share sheet
-          return { success: true, method: 'cancelled' };
-        }
-        console.warn('Native share threw error, falling back:', shareErr);
-      }
-    }
-
-    // 2. Fallback for PC or browsers without navigator.canShare files:
-    // Open the Blob URL directly in a new window/tab
+    // Launch the Blob URL in a new window/tab for preview
     const openedWindow = window.open(url, '_blank');
     if (openedWindow && !openedWindow.closed) {
-      return { success: true, method: 'new_tab' };
+      return { success: true, method: 'new_tab', message: 'Document opened in preview window!' };
     }
 
-    // 3. If popup was blocked by browser, trigger direct download
-    downloadMaterialFile(material);
-    return { success: true, method: 'download' };
+    return { 
+      success: false, 
+      method: 'blocked', 
+      message: 'Pop-up was blocked. Use the In-App Reader or click Download.' 
+    };
   } catch (err) {
-    console.error('Failed to open document with device app:', err);
-    // Absolute fallback: download file
-    downloadMaterialFile(material);
-    return { success: false, method: 'download' };
+    console.error('Failed to open document preview:', err);
+    return { success: false, method: 'blocked', message: 'Could not open external viewer.' };
   }
 }
 
 /**
- * Opens document directly in a new browser window/tab
+ * Shares material file via native system share sheet (WhatsApp, Quick Share, Bluetooth, etc.)
+ */
+export async function shareMaterialFile(material: Material): Promise<boolean> {
+  try {
+    const { file } = materialToFile(material);
+    if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        title: material.title,
+        text: `Sharing ${material.title} (${material.category}) from StudySphere`,
+        files: [file],
+      });
+      return true;
+    }
+  } catch (err: unknown) {
+    if (err instanceof Error && err.name === 'AbortError') {
+      return false; // User cancelled
+    }
+    console.warn('Share error:', err);
+  }
+  return false;
+}
+
+/**
+ * Opens document directly in a new browser window/tab.
+ * Does NOT trigger any automatic download if popup is blocked.
  */
 export function openInBrowserTab(material: Material): boolean {
   try {
     const { url } = materialToFile(material);
     const win = window.open(url, '_blank');
-    if (!win || win.closed || typeof win.closed === 'undefined') {
-      // Popup blocked, fallback to download
-      downloadMaterialFile(material);
-      return false;
-    }
-    return true;
+    return Boolean(win && !win.closed);
   } catch (e) {
     console.error('Could not open in browser tab:', e);
-    downloadMaterialFile(material);
     return false;
   }
 }
