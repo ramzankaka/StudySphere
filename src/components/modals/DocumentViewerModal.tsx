@@ -21,6 +21,7 @@ import {
 import { Material, Subject } from '../../types';
 import { formatFileSize, COLOR_MAP } from '../../utils/helpers';
 import { materialToFile, openInBrowserTab, downloadMaterialFile, shareMaterialFile } from '../../utils/fileViewer';
+import { PDFCanvasViewer } from '../PDFCanvasViewer';
 
 interface DocumentViewerModalProps {
   material: Material | null;
@@ -242,16 +243,13 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
           {/* 1. PDF Documents */}
           {material.fileType === 'pdf' ? (
             <div className="w-full flex flex-col gap-4">
-              {/* Embedded PDF Viewer via Blob URL */}
-              {blobUrl ? (
-                <div className="w-full bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
-                  <iframe
-                    src={blobUrl}
-                    title={material.title}
-                    className="w-full h-[540px] border-0"
-                  />
-                </div>
-              ) : null}
+              {/* Embedded Interactive PDF Viewer via Canvas (No automatic downloads) */}
+              <PDFCanvasViewer
+                dataUrlOrBlob={material.fileData || blobUrl || ''}
+                title={material.title}
+                fileName={material.fileName}
+                description={material.description}
+              />
 
               {/* Study Notes & Outline Overview */}
               <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">

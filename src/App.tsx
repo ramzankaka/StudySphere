@@ -280,7 +280,7 @@ export default function App() {
             notes={notes}
             onNavigateTab={setCurrentTab}
             onSelectSubject={(s) => setSelectedSubjectDetail(s)}
-            onSelectMaterial={(m) => setMaterialForOptions(m)}
+            onSelectMaterial={(m) => setSelectedMaterialForPreview(m)}
             onSelectNote={(n) => {
               setEditingNote(n);
               setIsNoteEditorOpen(true);
@@ -328,7 +328,7 @@ export default function App() {
             materials={materials}
             subjects={subjects}
             searchQuery={searchQuery}
-            onSelectMaterial={(m) => setMaterialForOptions(m)}
+            onSelectMaterial={(m) => setSelectedMaterialForPreview(m)}
             onUploadClick={() => {
               setUploadDefaultSubjectId(undefined);
               setIsUploadOpen(true);
@@ -516,7 +516,7 @@ export default function App() {
           setIsAddSubjectOpen(true);
         }}
         onDelete={handleDeleteSubject}
-        onSelectMaterial={(m) => setMaterialForOptions(m)}
+        onSelectMaterial={(m) => setSelectedMaterialForPreview(m)}
         onSelectNote={(n) => {
           setEditingNote(n);
           setIsNoteEditorOpen(true);

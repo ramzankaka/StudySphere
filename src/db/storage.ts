@@ -77,7 +77,7 @@ const DEFAULT_MATERIALS: Material[] = [
     fileType: 'pdf',
     mimeType: 'application/pdf',
     fileSize: 420000,
-    fileData: 'data:application/pdf;base64,JVBERi0xLjQKJcTl8uXrCg==', // lightweight placeholder or text representation
+    fileData: 'data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhID4+ID4+ID4+ID4+CmVuZG9iago0IDAgb2JqCjw8IC9MZW5ndGggNjAwID4+CnN0cmVhbQpCVCAvRjEgMTggVGYgNTAgNzUwIFRkIChDUy0zMDEgRGF0YSBTdHJ1Y3R1cmVzICYgQWxnb3JpdGhtcykgVGogRVQKQlQgL0YxIDEyIFRmIDUwIDcxMCBUZAooRmFsbCAyMDI2IENvdXJzZSBTeWxsYWJ1cyAtIERyLiBBbGFuIFZhbmNlKSAnCigpICcKKDEuIEdyYWRpbmcgQnJlYWtkb3duOikgJwooICAgLSBNaWR0ZXJtIEV4YW0gMTogMjAlKSAnCiggICAtIE1pZHRlcm0gRXhhbSAyOiAyMCUpICcKKCAgIC0gRmluYWwgRXhhbTogMzAlKSAnCiggICAtIEhvbWV3b3JrICYgUHJvZ3JhbW1pbmcgUHJvamVjdHM6IDI1JSkgJwooICAgLSBBY3RpdmUgQ2xhc3MgUGFydGljaXBhdGlvbjogNSUpICcKKCkgJwooMi4gQ291cnNlIFBvbGljaWVzOikgJwooICAgLSBMYXRlIGhvbWV3b3JrIHBlbmFsaXplZCAxMCUgcGVyIGRheSAobWF4IDMgZGF5cykuKSAnCiggICAtIEFjYWRlbWljIEludGVncml0eTogQWxsIGNvZGUgc3VibWlzc2lvbnMgdW5kZXJnbyBhdXRvbWF0ZWQgcGxhZ2lhcmlzbSBhbmFseXNpcy4pICcKKCkgJwooMy4gUmVxdWlyZWQgVGV4dHM6KSAnCiggICAtIEludHJvZHVjdGlvbiB0byBBbGdvcml0aG1zIChDTFJTLCA0dGggRWRpdGlvbikpICcKRVQKZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgNQowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1OCAwMDAwMCBuIAowMDAwMDAwMTE1IDAwMDAwIG4gCjAwMDAwMDAzMDAgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA1IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgoxMDAwCiUlRU9G',
     uploadDate: new Date(Date.now() - 14 * 86400000).toISOString(),
     category: 'Syllabus',
     tags: ['Syllabus', 'Policies', 'Grading'],
@@ -105,7 +105,7 @@ const DEFAULT_MATERIALS: Material[] = [
     fileType: 'pdf',
     mimeType: 'application/pdf',
     fileSize: 890000,
-    fileData: 'data:application/pdf;base64,JVBERi0xLjQKJcTl8uXrCg==',
+    fileData: 'data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhID4+ID4+ID4+ID4+CmVuZG9iago0IDAgb2JqCjw8IC9MZW5ndGggNzA0ID4+CnN0cmVhbQpCVCAvRjEgMTggVGYgNTAgNzUwIFRkIChNQVRILTIwNCBNdWx0aXZhcmlhYmxlIENhbGN1bHVzKSBUaiBFVApCVCAvRjEgMTIgVGYgNTAgNzEwIFRkCihMZWN0dXJlIDE0IFN1bW1hcnkgU2xpZGVzIC0gUHJvZi4gRWxlbmEgUm9zdG92YSkgJwooKSAnCigxLiBTdG9rZXMgVGhlb3JlbSBEZWZpbml0aW9uOikgJwooICAgLSBUaGUgY2lyY3VsYXRpb24gb2YgRiBhbG9uZyBib3VuZGFyeSBDIGVxdWFscyB0aGUgZmx1eCBvZiBjdXJsKEYpIGFjcm9zcyBTLikgJwooICAgLSBJbnRlZ3JhbF9DIChGIC4gZHIpID0gRG91YmxlX0ludGVncmFsX1MgKGN1cmwgRiAuIGRTKSkgJwooKSAnCigyLiBEaXZlcmdlbmNlIFRoZW9yZW0gKEdhdXNzIFRoZW9yZW0pOikgJwooICAgLSBPdXR3YXJkIGZsdXggdGhyb3VnaCBjbG9zZWQgc3VyZmFjZSBlcXVhbHMgdHJpcGxlIGludGVncmFsIG9mIGRpdmVyZ2VuY2Ugb3ZlciBWLikgJwooICAgLSBEb3VibGVfSW50ZWdyYWxfUyAoRiAuIGRTKSA9IFRyaXBsZV9JbnRlZ3JhbF9FIChkaXYgRiBkVikpICcKKCkgJwooMy4gS2V5IE1pZHRlcm0gUHJvYmxlbSBUeXBlczopICcKKCAgIC0gVmVyaWZ5aW5nIEdyZWVuIFRoZW9yZW0gb24gc2ltcGxlIGNsb3NlZCBwbGFuYXIgY3VydmVzLikgJwooICAgLSBDb21wdXRpbmcgc3VyZmFjZSBub3JtYWxzIGFuZCBvcmllbnRhdGlvbiBvZiBvcGVuIHN1cmZhY2VzLikgJwpFVAplbmRzdHJlYW0KZW5kb2JqCnhyZWYKMCA1CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAwOSAwMDAwMCBuIAowMDAwMDAwMDU4IDAwMDAwIG4gCjAwMDAwMDAxMTUgMDAwMDAgbiAKMDAwMDAwMDMwMCAwMDAwMCBuIAp0cmFpbGVyCjw8IC9TaXplIDUgL1Jvb3QgMSAwIFIgPj4Kc3RhcnR4cmVmCjExMDQKJSVFT0Y=',
     uploadDate: new Date(Date.now() - 4 * 86400000).toISOString(),
     category: 'Lecture Slides',
     tags: ['VectorCalculus', 'Stokes', 'Integrals'],
@@ -467,7 +467,16 @@ class StudyDatabase {
 
   // --- MATERIALS API ---
   async getMaterials(): Promise<Material[]> {
-    return this.getAllFromStore<Material>('materials', 'studysphere_materials', DEFAULT_MATERIALS);
+    const list = await this.getAllFromStore<Material>('materials', 'studysphere_materials', DEFAULT_MATERIALS);
+    return list.map((m) => {
+      if (m.id === 'mat-1' && (!m.fileData || m.fileData === 'data:application/pdf;base64,JVBERi0xLjQKJcTl8uXrCg==')) {
+        return { ...m, fileData: DEFAULT_MATERIALS[0].fileData };
+      }
+      if (m.id === 'mat-3' && (!m.fileData || m.fileData === 'data:application/pdf;base64,JVBERi0xLjQKJcTl8uXrCg==')) {
+        return { ...m, fileData: DEFAULT_MATERIALS[2].fileData };
+      }
+      return m;
+    });
   }
 
   async saveMaterial(material: Material): Promise<void> {
