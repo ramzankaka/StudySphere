@@ -108,29 +108,55 @@ export const UploadMaterialModal: React.FC<UploadMaterialModalProps> = ({
 
     if (mime.includes('pdf') || name.endsWith('.pdf')) {
       detectedType = 'pdf';
+    } else if (
+      mime.includes('presentation') ||
+      mime.includes('powerpoint') ||
+      name.endsWith('.ppt') ||
+      name.endsWith('.pptx') ||
+      name.endsWith('.pps') ||
+      name.endsWith('.ppsx') ||
+      name.endsWith('.odp')
+    ) {
+      detectedType = 'slides';
+      setCategory('Lecture Slides');
     } else if (mime.startsWith('image/')) {
       detectedType = 'image';
-    } else if (name.endsWith('.md') || name.endsWith('.txt')) {
+    } else if (name.endsWith('.md') || name.endsWith('.txt') || name.endsWith('.csv') || name.endsWith('.tsv')) {
       detectedType = 'text';
     } else if (
       name.endsWith('.py') ||
       name.endsWith('.js') ||
       name.endsWith('.ts') ||
+      name.endsWith('.tsx') ||
+      name.endsWith('.jsx') ||
       name.endsWith('.java') ||
       name.endsWith('.cpp') ||
       name.endsWith('.c') ||
       name.endsWith('.html') ||
       name.endsWith('.css') ||
-      name.endsWith('.json')
+      name.endsWith('.json') ||
+      name.endsWith('.sql')
     ) {
       detectedType = 'code';
     } else if (
       mime.includes('word') ||
+      mime.includes('wordprocessingml') ||
       name.endsWith('.docx') ||
       name.endsWith('.doc') ||
-      name.endsWith('.rtf')
+      name.endsWith('.rtf') ||
+      name.endsWith('.odt') ||
+      name.endsWith('.xlsx') ||
+      name.endsWith('.xls')
     ) {
       detectedType = 'doc';
+    } else if (
+      name.endsWith('.zip') ||
+      name.endsWith('.rar') ||
+      name.endsWith('.7z') ||
+      name.endsWith('.tar') ||
+      name.endsWith('.gz')
+    ) {
+      detectedType = 'archive';
     }
     setFileType(detectedType);
 

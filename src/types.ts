@@ -40,7 +40,7 @@ export interface Material {
   subjectId: string;
   title: string;
   fileName: string;
-  fileType: 'pdf' | 'image' | 'doc' | 'code' | 'text' | 'archive' | 'other';
+  fileType: 'pdf' | 'image' | 'doc' | 'slides' | 'code' | 'text' | 'archive' | 'other';
   mimeType: string;
   fileSize: number; // in bytes
   fileData?: string; // Data URL or text content

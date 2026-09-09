@@ -9,7 +9,8 @@ import {
   Code, 
   Image as ImageIcon, 
   FileCheck,
-  Edit3
+  Edit3,
+  Presentation
 } from 'lucide-react';
 import { Material, Subject, MaterialCategory } from '../../types';
 import { formatFileSize, COLOR_MAP } from '../../utils/helpers';
@@ -69,6 +70,8 @@ export const MaterialsTab: React.FC<MaterialsTabProps> = ({
     switch (type) {
       case 'pdf':
         return <FileText size={20} className="text-rose-500 dark:text-rose-400" />;
+      case 'slides':
+        return <Presentation size={20} className="text-amber-500 dark:text-amber-400" />;
       case 'image':
         return <ImageIcon size={20} className="text-emerald-500 dark:text-emerald-400" />;
       case 'code':
