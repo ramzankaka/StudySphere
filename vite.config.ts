@@ -20,10 +20,11 @@ export default defineConfig(() => {
           theme_color: '#2563eb',
           background_color: '#0f172a',
           display: 'standalone',
-          display_override: ['standalone', 'fullscreen', 'window-controls-overlay'],
-          orientation: 'portrait-primary',
+          display_override: ['standalone', 'fullscreen'],
+          orientation: 'any',
           start_url: '/',
           scope: '/',
+          prefer_related_applications: false,
           categories: ['education', 'productivity'],
           icons: [
             {

@@ -191,6 +191,17 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({ isOpen, onClos
             </div>
           )}
 
+          {/* Android Standalone vs Chrome Mode Guidance */}
+          <div className="p-3 bg-amber-500/10 dark:bg-amber-500/15 rounded-xl border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200 space-y-1.5">
+            <h5 className="font-bold flex items-center gap-1.5 text-xs text-amber-800 dark:text-amber-300">
+              <Smartphone size={14} />
+              <span>Opening in Chrome mode instead of App mode?</span>
+            </h5>
+            <p className="text-[11px] leading-relaxed text-amber-800/90 dark:text-amber-300/90">
+              If Chrome's address bar is visible, your phone created a bookmark shortcut instead of installing the WebAPK app. In Chrome menu (⋮), tap <strong>"Install app"</strong> (with the download arrow), not "Add to Home screen bookmark". It will then launch in 100% full-screen app mode without Chrome bars!
+            </p>
+          </div>
+
           {/* Offline & Performance Feature Note */}
           <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
             <span className="flex items-center gap-1.5">

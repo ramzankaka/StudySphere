@@ -6,11 +6,12 @@
   "scope": "/",
   "id": "/",
   "display": "standalone",
-  "display_override": ["standalone", "fullscreen", "window-controls-overlay"],
+  "display_override": ["standalone", "fullscreen"],
   "background_color": "#0f172a",
   "theme_color": "#2563eb",
   "lang": "en",
-  "orientation": "portrait-primary",
+  "orientation": "any",
+  "prefer_related_applications": false,
   "categories": ["education", "productivity"],
   "icons": [
     {

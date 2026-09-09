@@ -27,7 +27,7 @@ import { EditMaterialModal } from './components/modals/EditMaterialModal';
 import { AddDeadlineModal } from './components/modals/AddDeadlineModal';
 import { NoteEditorModal } from './components/modals/NoteEditorModal';
 import { DocumentViewerModal } from './components/modals/DocumentViewerModal';
-import { OpenMaterialOptionsModal } from './components/modals/OpenMaterialOptionsModal';
+import { AndroidAppChooserModal } from './components/modals/AndroidAppChooserModal';
 import { SubjectDetailModal } from './components/modals/SubjectDetailModal';
 import { StudyTimerModal } from './components/modals/StudyTimerModal';
 import { DeleteAllDataModal } from './components/modals/DeleteAllDataModal';
@@ -280,7 +280,7 @@ export default function App() {
             notes={notes}
             onNavigateTab={setCurrentTab}
             onSelectSubject={(s) => setSelectedSubjectDetail(s)}
-            onSelectMaterial={(m) => setSelectedMaterialForPreview(m)}
+            onSelectMaterial={(m) => setMaterialForOptions(m)}
             onSelectNote={(n) => {
               setEditingNote(n);
               setIsNoteEditorOpen(true);
@@ -328,7 +328,7 @@ export default function App() {
             materials={materials}
             subjects={subjects}
             searchQuery={searchQuery}
-            onSelectMaterial={(m) => setSelectedMaterialForPreview(m)}
+            onSelectMaterial={(m) => setMaterialForOptions(m)}
             onUploadClick={() => {
               setUploadDefaultSubjectId(undefined);
               setIsUploadOpen(true);
@@ -467,8 +467,8 @@ export default function App() {
         defaultSubjectId={noteDefaultSubjectId}
       />
 
-      {/* 5a. Open Material Options Modal (Device App, Browser, In-App, Download) */}
-      <OpenMaterialOptionsModal
+      {/* 5a. Android System "Open with" App Chooser Modal */}
+      <AndroidAppChooserModal
         isOpen={Boolean(materialForOptions)}
         material={materialForOptions}
         subject={subjects.find((s) => s.id === materialForOptions?.subjectId)}
@@ -516,7 +516,7 @@ export default function App() {
           setIsAddSubjectOpen(true);
         }}
         onDelete={handleDeleteSubject}
-        onSelectMaterial={(m) => setSelectedMaterialForPreview(m)}
+        onSelectMaterial={(m) => setMaterialForOptions(m)}
         onSelectNote={(n) => {
           setEditingNote(n);
           setIsNoteEditorOpen(true);

@@ -39,6 +39,7 @@ import {
   isSpreadsheetMaterial
 } from '../../utils/fileViewer';
 import { PDFCanvasViewer } from '../PDFCanvasViewer';
+import { AndroidAppChooserModal } from './AndroidAppChooserModal';
 
 interface DocumentViewerModalProps {
   material: Material | null;
@@ -64,6 +65,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
+  const [isAppChooserOpen, setIsAppChooserOpen] = useState(false);
 
   // Generate a clean Blob URL whenever the material changes
   useEffect(() => {
@@ -99,14 +101,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
   };
 
   const handleOpenWithDevice = () => {
-    const webUrl = extractWebUrl(material.fileData);
-    if (webUrl) {
-      window.open(webUrl, '_blank');
-      showToast('Opening document link...');
-      return;
-    }
-    downloadMaterialFile(material);
-    showToast('File downloaded! Tap the notification to open in your installed app.');
+    setIsAppChooserOpen(true);
   };
 
   const handleBrowserTab = () => {
@@ -313,14 +308,20 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
           {webUrl ? (
             <div className="max-w-2xl mx-auto space-y-4">
               <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center space-y-5">
-                <div className="w-16 h-16 rounded-2xl bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center mx-auto shadow-sm">
-                  <Globe size={32} />
-                </div>
+                {/camscanner/i.test(webUrl) ? (
+                  <div className="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-sm">
+                    <span className="font-black text-xl tracking-tighter">CS</span>
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto shadow-sm">
+                    <Globe size={32} />
+                  </div>
+                )}
 
                 <div>
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-100 dark:bg-cyan-900/50 text-cyan-800 dark:text-cyan-300 text-xs font-bold mb-2">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/80 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-xs font-bold mb-2">
                     <LinkIcon size={12} />
-                    <span>Cloud / CamScanner Document Link</span>
+                    <span>{/camscanner/i.test(webUrl) ? 'CamScanner Scanned Document' : 'Cloud Document Link'}</span>
                   </div>
                   <h4 className="font-bold text-slate-900 dark:text-white text-lg">{material.title}</h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-1">
@@ -328,15 +329,15 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                   </p>
                 </div>
 
-                {/* Link Box */}
-                <div className="p-3.5 bg-slate-50 dark:bg-slate-850 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 text-left">
+                {/* Link Box with proper dark mode */}
+                <div className="p-3.5 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 text-left">
                   <div className="min-w-0 flex-1">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Target Address</span>
-                    <p className="text-xs font-mono text-cyan-600 dark:text-cyan-400 truncate mt-0.5">{webUrl}</p>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider block">Target Address</span>
+                    <p className="text-xs font-mono text-emerald-600 dark:text-emerald-400 truncate mt-0.5">{webUrl}</p>
                   </div>
                   <button
                     onClick={() => handleCopyUrl(webUrl)}
-                    className="p-2 text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition shrink-0"
+                    className="p-2 text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition shrink-0"
                     title="Copy Link"
                   >
                     {copiedUrl ? <Check size={16} className="text-emerald-500" /> : <Copy size={16} />}
@@ -344,20 +345,20 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-2">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-2">
                   <button
-                    onClick={() => window.open(webUrl, '_blank')}
-                    className="w-full sm:w-auto px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95"
-                  >
-                    <ExternalLink size={15} />
-                    <span>Open in CamScanner / Browser</span>
-                  </button>
-                  <button
-                    onClick={handleOpenWithDevice}
-                    className="w-full sm:w-auto px-5 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition"
+                    onClick={() => setIsAppChooserOpen(true)}
+                    className="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95"
                   >
                     <Smartphone size={15} />
-                    <span>Open in Installed App</span>
+                    <span>Open with App...</span>
+                  </button>
+                  <button
+                    onClick={() => window.open(webUrl, '_blank')}
+                    className="w-full sm:w-auto px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95"
+                  >
+                    <ExternalLink size={15} />
+                    <span>Open in {/camscanner/i.test(webUrl) ? 'CamScanner' : 'Browser'}</span>
                   </button>
                 </div>
               </div>
@@ -726,6 +727,15 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
           </div>
         </div>
       )}
+
+      {/* Android System App Chooser Modal */}
+      <AndroidAppChooserModal
+        isOpen={isAppChooserOpen}
+        material={material}
+        subject={subject}
+        onClose={() => setIsAppChooserOpen(false)}
+        onOpenInAppReader={() => setIsAppChooserOpen(false)}
+      />
     </div>
   );
 };
