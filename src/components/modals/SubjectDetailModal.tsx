@@ -13,7 +13,9 @@ import {
   CheckCircle2, 
   Clock, 
   Plus,
-  Download
+  Download,
+  Eye,
+  Share2
 } from 'lucide-react';
 import { Subject, Material, Deadline, StudyNote } from '../../types';
 import { COLOR_MAP, getSubjectIcon, formatFileSize, formatRelativeDueDate, getPriorityBadge } from '../../utils/helpers';
@@ -30,6 +32,7 @@ interface SubjectDetailModalProps {
   deadlines: Deadline[];
   notes: StudyNote[];
   onSelectMaterial: (m: Material) => void;
+  onPreviewMaterial?: (m: Material) => void;
   onSelectNote: (n: StudyNote) => void;
   onToggleDeadline: (d: Deadline) => void;
   onQuickUpload: () => void;
@@ -47,6 +50,7 @@ export const SubjectDetailModal: React.FC<SubjectDetailModalProps> = ({
   deadlines,
   notes,
   onSelectMaterial,
+  onPreviewMaterial,
   onSelectNote,
   onToggleDeadline,
   onQuickUpload,
@@ -202,7 +206,20 @@ export const SubjectDetailModal: React.FC<SubjectDetailModalProps> = ({
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="flex items-center gap-1 shrink-0">
+                        {onPreviewMaterial && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onPreviewMaterial(mat);
+                            }}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-200/60 transition"
+                            title="Preview in StudySphere (In-App Reader)"
+                          >
+                            <Eye size={13} />
+                          </button>
+                        )}
                         <button
                           type="button"
                           onClick={(e) => {
@@ -214,9 +231,18 @@ export const SubjectDetailModal: React.FC<SubjectDetailModalProps> = ({
                         >
                           <Download size={13} />
                         </button>
-                        <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-slate-200/80 text-slate-700">
-                          Options
-                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectMaterial(mat);
+                          }}
+                          className="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-600 transition"
+                          title="Open with Device App"
+                        >
+                          <Share2 size={11} />
+                          <span>Open with</span>
+                        </button>
                       </div>
                     </div>
                   ))}

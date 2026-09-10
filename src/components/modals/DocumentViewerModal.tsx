@@ -109,9 +109,9 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
   };
 
   const handleShare = async () => {
-    const shared = await shareMaterialFile(material);
-    if (shared) {
-      showToast('Shared successfully!');
+    const res = await openWithDeviceApp(material);
+    if (res.success && res.message) {
+      showToast(res.message);
     }
   };
 
@@ -347,11 +347,18 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-2">
                   <button
-                    onClick={() => setIsAppChooserOpen(true)}
+                    onClick={async () => {
+                      const res = await openWithDeviceApp(material);
+                      if (res.success && res.message) {
+                        showToast(res.message);
+                      } else if (!res.success) {
+                        setIsAppChooserOpen(true);
+                      }
+                    }}
                     className="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95"
                   >
                     <Smartphone size={15} />
-                    <span>Open with App...</span>
+                    <span>Open with Device App</span>
                   </button>
                   <button
                     onClick={() => window.open(webUrl, '_blank')}

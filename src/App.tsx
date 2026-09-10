@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from './db/storage';
 import { Subject, Material, Deadline, StudyNote, AppTab } from './types';
 import { triggerConfetti } from './utils/helpers';
+import { materialToFile, extractWebUrl } from './utils/fileViewer';
 
 // Components
 import { TopAppBar } from './components/TopAppBar';
@@ -242,6 +243,38 @@ export default function App() {
   // Pending deadlines count for badge
   const pendingDeadlinesCount = deadlines.filter((d) => d.status !== 'completed').length;
 
+  // Trigger native Android system "Open with" chooser (Drive, CamScanner, WPS Office, etc.)
+  // identical to WhatsApp, or fall back to the built-in reader on desktop
+  const handleOpenMaterial = async (material: Material) => {
+    try {
+      const { file } = materialToFile(material);
+      if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: material.title,
+          files: [file],
+        });
+        return;
+      }
+
+      const webUrl = extractWebUrl(material.fileData);
+      if (webUrl && typeof navigator !== 'undefined' && navigator.share) {
+        await navigator.share({
+          title: material.title,
+          url: webUrl,
+        });
+        return;
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return; // User cancelled Android system sheet
+      }
+      console.warn('Native open with failed, falling back to in-app reader:', err);
+    }
+
+    // Fallback for desktop / unsupported environments: In-App Document Viewer
+    setSelectedMaterialForPreview(material);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center text-slate-500 gap-3 font-sans transition-colors">
@@ -280,7 +313,7 @@ export default function App() {
             notes={notes}
             onNavigateTab={setCurrentTab}
             onSelectSubject={(s) => setSelectedSubjectDetail(s)}
-            onSelectMaterial={(m) => setMaterialForOptions(m)}
+            onSelectMaterial={handleOpenMaterial}
             onSelectNote={(n) => {
               setEditingNote(n);
               setIsNoteEditorOpen(true);
@@ -328,7 +361,8 @@ export default function App() {
             materials={materials}
             subjects={subjects}
             searchQuery={searchQuery}
-            onSelectMaterial={(m) => setMaterialForOptions(m)}
+            onSelectMaterial={handleOpenMaterial}
+            onPreviewMaterial={(m) => setSelectedMaterialForPreview(m)}
             onUploadClick={() => {
               setUploadDefaultSubjectId(undefined);
               setIsUploadOpen(true);
@@ -516,7 +550,8 @@ export default function App() {
           setIsAddSubjectOpen(true);
         }}
         onDelete={handleDeleteSubject}
-        onSelectMaterial={(m) => setMaterialForOptions(m)}
+        onSelectMaterial={handleOpenMaterial}
+        onPreviewMaterial={(m) => setSelectedMaterialForPreview(m)}
         onSelectNote={(n) => {
           setEditingNote(n);
           setIsNoteEditorOpen(true);

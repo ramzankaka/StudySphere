@@ -245,30 +245,20 @@ Tags: ${(material.tags || []).join(', ')}`;
 
 /**
  * Opens material with an application installed on the user's device
- * (e.g., Microsoft PowerPoint, Google Slides, WPS Office, Word, Adobe Acrobat)
- * using the device's native app chooser / share sheet.
+ * (e.g., Google Drive PDF Viewer, CamScanner, WPS Office, Microsoft PowerPoint, Adobe Acrobat)
+ * using the device's native Android system "Open with" chooser dialog, identical to WhatsApp.
  */
 export async function openWithDeviceApp(material: Material): Promise<{
   success: boolean;
-  method: 'share' | 'url' | 'tab' | 'download';
+  method: 'share' | 'url' | 'tab' | 'download' | 'viewer';
   message: string;
 }> {
-  // 1. If it's a web link (CamScanner, Google Slides, Drive link), open directly
-  const webUrl = extractWebUrl(material.fileData);
-  if (webUrl) {
-    const win = window.open(webUrl, '_blank');
-    if (win) {
-      return { success: true, method: 'url', message: 'Opening document link...' };
-    }
-  }
-
-  // 2. Native Share to installed apps (PowerPoint, Slides, Office, Acrobat) on Android/mobile
+  // 1. If it's a real file (or cached data URL / base64), pass the File directly to Android system chooser
   try {
     const { file } = materialToFile(material);
     if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({
         title: material.title,
-        text: `Open ${material.title} (${material.category}) in installed app`,
         files: [file],
       });
       return { success: true, method: 'share', message: 'Opening in device app...' };
@@ -280,13 +270,33 @@ export async function openWithDeviceApp(material: Material): Promise<{
     console.warn('Native open with device app failed:', err);
   }
 
-  // 3. Fallback: Open in safe preview tab
-  const tabOpened = openInBrowserTab(material);
-  if (tabOpened) {
-    return { success: true, method: 'tab', message: 'Opened preview tab.' };
+  // 2. If it's a web link (CamScanner, Google Drive, OneDrive link), share the link to native apps
+  const webUrl = extractWebUrl(material.fileData);
+  if (webUrl && typeof navigator !== 'undefined' && navigator.share) {
+    try {
+      await navigator.share({
+        title: material.title,
+        text: material.title,
+        url: webUrl,
+      });
+      return { success: true, method: 'share', message: 'Opening in device app...' };
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return { success: true, method: 'share', message: 'Cancelled.' };
+      }
+    }
   }
 
-  // 4. Fallback: Save to device so user can open from notification/downloads
+  // 3. Fallback for environments without Web Share (e.g. desktop PC without share support)
+  // If it's a direct web link, allow opening in external tab
+  if (webUrl) {
+    const win = window.open(webUrl, '_blank');
+    if (win) {
+      return { success: true, method: 'url', message: 'Opening document link...' };
+    }
+  }
+
+  // 4. Fallback: Save to device so user can open from notification / downloads
   downloadMaterialFile(material);
   return { success: true, method: 'download', message: 'Saved to device downloads. Tap to open.' };
 }

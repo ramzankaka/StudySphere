@@ -10,7 +10,9 @@ import {
   Image as ImageIcon, 
   FileCheck,
   Edit3,
-  Presentation
+  Presentation,
+  Eye,
+  Share2
 } from 'lucide-react';
 import { Material, Subject, MaterialCategory } from '../../types';
 import { formatFileSize, COLOR_MAP } from '../../utils/helpers';
@@ -22,6 +24,7 @@ interface MaterialsTabProps {
   subjects: Subject[];
   searchQuery: string;
   onSelectMaterial: (material: Material) => void;
+  onPreviewMaterial?: (material: Material) => void;
   onUploadClick: () => void;
   onEditMaterial: (material: Material) => void;
   onDeleteMaterial: (id: string) => void;
@@ -44,6 +47,7 @@ export const MaterialsTab: React.FC<MaterialsTabProps> = ({
   subjects,
   searchQuery,
   onSelectMaterial,
+  onPreviewMaterial,
   onUploadClick,
   onEditMaterial,
   onDeleteMaterial,
@@ -219,6 +223,28 @@ export const MaterialsTab: React.FC<MaterialsTabProps> = ({
                     {new Date(mat.uploadDate).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                   </span>
                   <div className="flex items-center gap-1">
+                    {onPreviewMaterial && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onPreviewMaterial(mat);
+                        }}
+                        className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/40 transition"
+                        title="Preview in StudySphere (In-App Reader)"
+                      >
+                        <Eye size={13} />
+                      </button>
+                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectMaterial(mat);
+                      }}
+                      className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/40 transition"
+                      title="Open with Device App (Drive, CamScanner, etc.)"
+                    >
+                      <Share2 size={13} />
+                    </button>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
